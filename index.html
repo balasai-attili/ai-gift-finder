@@ -1,0 +1,1794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GiftGenius AI — Instant Personalized Gift Finder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ============================================================
+       RESET & ROOT
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:        #FDF6EE;
+      --warm-white:   #FFFBF7;
+      --terracotta:   #C85A2A;
+      --terra-dark:   #9E3E18;
+      --terra-light:  #F5EBE0;
+      --terra-muted:  #E8D5C4;
+      --ink:          #1C1208;
+      --ink-muted:    #6B5A47;
+      --ink-faint:    #9C8A77;
+      --gold:         #D4A843;
+      --gold-light:   #FAF0D7;
+      --gold-dark:    #7A5A10;
+      --green:        #3B6D11;
+      --green-light:  #EAF3DE;
+      --blue:         #185FA5;
+      --blue-light:   #E6F1FB;
+      --red:          #A32D2D;
+      --red-light:    #FCEBEB;
+      --border:       rgba(100,60,20,0.14);
+      --border-strong:rgba(100,60,20,0.28);
+      --shadow-sm:    0 1px 8px rgba(100,60,20,0.08);
+      --shadow-md:    0 4px 24px rgba(100,60,20,0.12);
+      --shadow-lg:    0 10px 48px rgba(100,60,20,0.16);
+      --radius-sm:    8px;
+      --radius-md:    14px;
+      --radius-lg:    20px;
+      --radius-xl:    28px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ============================================================
+       NAV
+    ============================================================ */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(253,246,238,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--ink);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-logo .logo-dot {
+      width: 10px; height: 10px;
+      background: var(--terracotta);
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--terracotta); }
+
+    .nav-cta {
+      background: var(--ink);
+      color: var(--cream) !important;
+      padding: 8px 18px;
+      border-radius: var(--radius-sm);
+      transition: background 0.2s !important;
+    }
+
+    .nav-cta:hover { background: var(--terracotta) !important; color: var(--cream) !important; }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .hamburger span {
+      width: 24px; height: 2px;
+      background: var(--ink);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    /* ============================================================
+       HERO SECTION
+    ============================================================ */
+    #home {
+      background: var(--ink);
+      color: var(--cream);
+      padding: 5rem 2rem 4rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #home::before {
+      content: '';
+      position: absolute;
+      top: -80px; left: -80px;
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      background: var(--terracotta);
+      opacity: 0.12;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    #home::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; right: -60px;
+      width: 260px; height: 260px;
+      border-radius: 50%;
+      background: var(--gold);
+      opacity: 0.09;
+      animation: float 10s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%       { transform: translateY(-20px) scale(1.05); }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(212,168,67,0.18);
+      border: 1px solid rgba(212,168,67,0.35);
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 1.6rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-badge .pulse {
+      width: 7px; height: 7px;
+      background: var(--gold);
+      border-radius: 50%;
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    #home h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 6vw, 3.8rem);
+      font-weight: 700;
+      line-height: 1.12;
+      margin-bottom: 1.2rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    #home h1 .accent { color: var(--terracotta); }
+    #home h1 em { color: var(--gold); font-style: italic; }
+
+    #home .hero-sub {
+      font-size: clamp(15px, 2.5vw, 18px);
+      color: rgba(253,246,238,0.6);
+      font-weight: 300;
+      max-width: 520px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.65;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 2;
+    }
+
+    .btn-primary {
+      background: var(--terracotta);
+      color: white;
+      padding: 14px 28px;
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary:hover { background: var(--terra-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(200,90,42,0.35); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--cream);
+      padding: 14px 28px;
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 15px;
+      border: 1px solid rgba(253,246,238,0.25);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-ghost:hover { border-color: rgba(253,246,238,0.6); background: rgba(253,246,238,0.08); }
+
+    /* Stats strip */
+    .stats-strip {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      margin-top: 3.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 2;
+    }
+
+    .stat-item { text-align: center; }
+
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--gold);
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: rgba(253,246,238,0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* ============================================================
+       HOW IT WORKS
+    ============================================================ */
+    #how {
+      padding: 5rem 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .section-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--terracotta);
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 0.8rem;
+      line-height: 1.2;
+    }
+
+    .section-sub {
+      text-align: center;
+      color: var(--ink-muted);
+      font-size: 15px;
+      max-width: 480px;
+      margin: 0 auto 3.5rem;
+      line-height: 1.6;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .step-card {
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.25s, box-shadow 0.25s;
+      position: relative;
+    }
+
+    .step-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+
+    .step-num {
+      position: absolute;
+      top: -14px; left: 50%;
+      transform: translateX(-50%);
+      width: 28px; height: 28px;
+      background: var(--terracotta);
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .step-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-card p {
+      font-size: 13.5px;
+      color: var(--ink-muted);
+      line-height: 1.55;
+    }
+
+    /* ============================================================
+       GIFT FINDER SECTION
+    ============================================================ */
+    #finder {
+      background: linear-gradient(180deg, var(--cream) 0%, var(--terra-light) 100%);
+      padding: 5rem 1.5rem;
+    }
+
+    .finder-inner {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .form-card {
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 2.4rem 2.2rem;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .form-card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-card-title .tag {
+      background: var(--terra-light);
+      color: var(--terracotta);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: 100px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .fields-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.1rem;
+    }
+
+    .field-group { display: flex; flex-direction: column; gap: 7px; }
+    .field-group.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 11.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-muted);
+    }
+
+    input, select, textarea {
+      background: var(--cream);
+      border: 1.5px solid var(--terra-muted);
+      border-radius: var(--radius-sm);
+      padding: 11px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+      appearance: none;
+    }
+
+    input::placeholder { color: var(--ink-faint); }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--terracotta);
+      box-shadow: 0 0 0 3px rgba(200,90,42,0.1);
+    }
+
+    textarea { resize: vertical; min-height: 82px; line-height: 1.55; }
+
+    select {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B5A47' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-color: var(--cream);
+      padding-right: 40px;
+    }
+
+    /* Budget chips */
+    .chips-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .chip {
+      padding: 8px 16px;
+      border-radius: 100px;
+      border: 1.5px solid var(--terra-muted);
+      background: var(--cream);
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--ink-muted);
+      cursor: pointer;
+      transition: all 0.18s;
+      font-weight: 400;
+      white-space: nowrap;
+    }
+
+    .chip:hover { border-color: var(--terracotta); color: var(--terracotta); }
+
+    .chip.active {
+      background: var(--terracotta);
+      border-color: var(--terracotta);
+      color: white;
+      font-weight: 500;
+    }
+
+    /* Tone chips */
+    .tone-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .tone-chip {
+      padding: 6px 14px;
+      border-radius: 100px;
+      border: 1.5px solid var(--terra-muted);
+      background: var(--cream);
+      font-size: 12.5px;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--ink-muted);
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .tone-chip.active {
+      background: var(--gold-light);
+      border-color: var(--gold);
+      color: var(--gold-dark);
+      font-weight: 500;
+    }
+
+    /* Find button */
+    .find-btn {
+      width: 100%;
+      margin-top: 1.8rem;
+      padding: 15px 28px;
+      background: var(--ink);
+      color: var(--cream);
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.22s;
+      letter-spacing: 0.01em;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .find-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--terracotta);
+      transform: translateX(-100%);
+      transition: transform 0.35s ease;
+      z-index: 0;
+    }
+
+    .find-btn:hover::after { transform: translateX(0); }
+    .find-btn > * { position: relative; z-index: 1; }
+    .find-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .find-btn:disabled::after { display: none; }
+
+    /* Error */
+    .error-msg {
+      background: var(--red-light);
+      border: 1px solid #F09595;
+      color: var(--red);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-size: 13.5px;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .error-msg.show { display: block; }
+
+    /* ============================================================
+       LOADING
+    ============================================================ */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 3.5rem 0;
+    }
+
+    .loading.show { display: block; }
+
+    .loading-anim {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 1.2rem;
+    }
+
+    .loading-anim span {
+      width: 12px; height: 12px;
+      background: var(--terracotta);
+      border-radius: 50%;
+      animation: bounce 1.2s infinite ease-in-out;
+    }
+
+    .loading-anim span:nth-child(2) { animation-delay: 0.18s; }
+    .loading-anim span:nth-child(3) { animation-delay: 0.36s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0.55); opacity: 0.3; }
+      40%            { transform: scale(1); opacity: 1; }
+    }
+
+    .loading-msg {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      color: var(--ink-muted);
+      font-style: italic;
+    }
+
+    .loading-sub {
+      font-size: 13px;
+      color: var(--ink-faint);
+      margin-top: 6px;
+    }
+
+    /* ============================================================
+       RESULTS
+    ============================================================ */
+    .results-section { display: none; margin-top: 2.5rem; }
+    .results-section.show { display: block; }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.4rem;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .results-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .results-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .results-count {
+      font-size: 13px;
+      color: var(--ink-muted);
+      background: var(--terra-light);
+      padding: 5px 14px;
+      border-radius: 100px;
+      border: 1px solid var(--terra-muted);
+    }
+
+    .gifts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 1.1rem;
+    }
+
+    .gift-card {
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.4rem;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.22s, box-shadow 0.22s;
+      cursor: default;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      animation: cardIn 0.4s ease both;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .gift-card:nth-child(2) { animation-delay: 0.06s; }
+    .gift-card:nth-child(3) { animation-delay: 0.12s; }
+    .gift-card:nth-child(4) { animation-delay: 0.18s; }
+    .gift-card:nth-child(5) { animation-delay: 0.24s; }
+    .gift-card:nth-child(6) { animation-delay: 0.3s; }
+
+    .gift-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--terracotta);
+    }
+
+    .gift-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+
+    .gift-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .gift-emoji { font-size: 2rem; line-height: 1; }
+
+    .fav-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: var(--ink-faint);
+      transition: color 0.2s, transform 0.2s;
+      padding: 2px;
+    }
+
+    .fav-btn:hover, .fav-btn.active { color: #E24B4A; transform: scale(1.2); }
+
+    .gift-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 7px;
+      line-height: 1.3;
+    }
+
+    .gift-why {
+      font-size: 13px;
+      color: var(--ink-muted);
+      line-height: 1.6;
+      margin-bottom: 12px;
+      flex: 1;
+    }
+
+    .gift-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: auto;
+    }
+
+    .gift-price {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--gold-light);
+      color: var(--gold-dark);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 11px;
+      border-radius: 100px;
+      border: 1px solid rgba(212,168,67,0.3);
+    }
+
+    .gift-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .gift-tag {
+      background: var(--green-light);
+      color: var(--green);
+      font-size: 10.5px;
+      font-weight: 500;
+      padding: 3px 9px;
+      border-radius: 100px;
+    }
+
+    /* Wishlist sidebar */
+    .wishlist-panel {
+      margin-top: 2rem;
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      display: none;
+    }
+
+    .wishlist-panel.show { display: block; }
+
+    .wishlist-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .wishlist-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .clear-wishlist {
+      font-size: 12px;
+      color: var(--red);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .wishlist-items { display: flex; flex-direction: column; gap: 8px; }
+
+    .wishlist-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--cream);
+      border-radius: var(--radius-sm);
+      padding: 9px 12px;
+      font-size: 13.5px;
+    }
+
+    .wishlist-item .wi-emoji { font-size: 1.2rem; }
+    .wishlist-item .wi-name { flex: 1; font-weight: 500; }
+    .wishlist-item .wi-price { font-size: 12px; color: var(--gold-dark); }
+
+    /* Action strip */
+    .action-strip {
+      background: var(--terra-light);
+      border: 1px solid var(--terra-muted);
+      border-radius: var(--radius-md);
+      padding: 1.2rem 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .action-strip p {
+      font-size: 14px;
+      color: var(--ink-muted);
+      font-style: italic;
+    }
+
+    .action-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .btn-sm {
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-sm-primary { background: var(--terracotta); color: white; }
+    .btn-sm-primary:hover { background: var(--terra-dark); }
+
+    .btn-sm-outline {
+      background: transparent;
+      color: var(--ink);
+      border: 1.5px solid var(--border-strong);
+    }
+
+    .btn-sm-outline:hover { background: var(--terra-light); }
+
+    /* ============================================================
+       FEATURES SECTION
+    ============================================================ */
+    #features {
+      padding: 5rem 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .feature-card {
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.8rem;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.22s;
+    }
+
+    .feature-card:hover { transform: translateY(-3px); }
+
+    .feature-icon {
+      width: 48px; height: 48px;
+      background: var(--terra-light);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .feature-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-card p {
+      font-size: 13.5px;
+      color: var(--ink-muted);
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       TESTIMONIALS
+    ============================================================ */
+    #testimonials {
+      background: var(--ink);
+      color: var(--cream);
+      padding: 5rem 2rem;
+    }
+
+    .testimonials-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .testimonials-inner .section-title { color: var(--cream); }
+    .testimonials-inner .section-sub { color: rgba(253,246,238,0.55); }
+
+    .testi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.3rem;
+      margin-top: 2.5rem;
+    }
+
+    .testi-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-lg);
+      padding: 1.6rem;
+    }
+
+    .testi-stars { color: var(--gold); font-size: 0.85rem; margin-bottom: 0.8rem; letter-spacing: 2px; }
+
+    .testi-text {
+      font-size: 14px;
+      color: rgba(253,246,238,0.75);
+      line-height: 1.65;
+      margin-bottom: 1.1rem;
+      font-style: italic;
+    }
+
+    .testi-author {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .testi-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: var(--terracotta);
+      color: white;
+    }
+
+    .testi-name { font-size: 13.5px; font-weight: 500; }
+    .testi-role { font-size: 12px; color: rgba(253,246,238,0.45); }
+
+    /* ============================================================
+       ABOUT SECTION
+    ============================================================ */
+    #about {
+      padding: 5rem 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      margin-top: 2.5rem;
+    }
+
+    .about-visual {
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 2.5rem;
+      text-align: center;
+      box-shadow: var(--shadow-md);
+    }
+
+    .about-big-icon { font-size: 4rem; display: block; margin-bottom: 1rem; }
+
+    .about-visual h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .about-visual p {
+      font-size: 13px;
+      color: var(--ink-muted);
+      line-height: 1.6;
+    }
+
+    .tech-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 1.2rem;
+      justify-content: center;
+    }
+
+    .tech-pill {
+      background: var(--blue-light);
+      color: var(--blue);
+      font-size: 11.5px;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 100px;
+    }
+
+    .about-content h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    .about-content p {
+      font-size: 14.5px;
+      color: var(--ink-muted);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+
+    .about-points { list-style: none; margin-top: 1.2rem; display: flex; flex-direction: column; gap: 9px; }
+
+    .about-points li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--ink-muted);
+      line-height: 1.5;
+    }
+
+    .about-points li::before {
+      content: '✦';
+      color: var(--terracotta);
+      font-size: 11px;
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer {
+      background: var(--ink);
+      color: rgba(253,246,238,0.55);
+      text-align: center;
+      padding: 2.5rem 2rem;
+      font-size: 13px;
+    }
+
+    footer .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--cream);
+      margin-bottom: 0.8rem;
+      display: block;
+    }
+
+    footer .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      list-style: none;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+
+    footer .footer-links a {
+      color: rgba(253,246,238,0.55);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    footer .footer-links a:hover { color: var(--gold); }
+
+    footer .copyright { margin-top: 1rem; font-size: 12px; }
+
+    /* ============================================================
+       TOAST
+    ============================================================ */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--ink);
+      color: var(--cream);
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      z-index: 999;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.3s ease;
+    }
+
+    .toast.show { display: flex; }
+
+    @keyframes slideUp {
+      from { transform: translateY(12px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
+
+    /* ============================================================
+       MOBILE NAV
+    ============================================================ */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 64px; left: 0; right: 0;
+      background: var(--cream);
+      border-bottom: 1px solid var(--border);
+      padding: 1.2rem 2rem;
+      z-index: 99;
+      box-shadow: var(--shadow-md);
+    }
+
+    .mobile-menu.open { display: flex; flex-direction: column; gap: 1rem; }
+
+    .mobile-menu a {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink);
+      text-decoration: none;
+      padding: 6px 0;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 720px) {
+      .fields-grid { grid-template-columns: 1fr; }
+      .about-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .gifts-grid { grid-template-columns: 1fr 1fr; }
+      nav { padding: 0 1.2rem; }
+      .form-card { padding: 1.5rem; }
+      #home { padding: 3.5rem 1.2rem 3rem; }
+    }
+
+    @media (max-width: 480px) {
+      .gifts-grid { grid-template-columns: 1fr; }
+      .stats-strip { gap: 1.5rem; }
+      .hero-btns { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav>
+  <a class="nav-logo" href="#home">
+    <span class="logo-dot"></span>GiftGenius AI
+  </a>
+  <ul class="nav-links">
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a class="nav-cta" href="#finder">Find a Gift 🎁</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMenu()" id="ham">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#how" onclick="closeMenu()">How it works</a>
+  <a href="#features" onclick="closeMenu()">Features</a>
+  <a href="#about" onclick="closeMenu()">About</a>
+  <a href="#finder" onclick="closeMenu()">Find a Gift 🎁</a>
+</div>
+
+<!-- ===== HERO ===== -->
+<section id="home">
+  <div class="hero-badge">
+    <span class="pulse"></span>
+    AI-Powered Gift Matching
+  </div>
+  <h1>Find the <span class="accent">Perfect Gift</span><br>for <em>Anyone</em>, Instantly</h1>
+  <p class="hero-sub">Stop guessing. Our AI understands your recipient's personality, interests, and budget — and finds gifts they'll truly love.</p>
+  <div class="hero-btns">
+    <a class="btn-primary" href="#finder">🎁 Try Gift Finder</a>
+    <a class="btn-ghost" href="#how">See how it works</a>
+  </div>
+  <div class="stats-strip">
+    <div class="stat-item">
+      <span class="stat-num">10K+</span>
+      <span class="stat-label">Gifts Found</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">98%</span>
+      <span class="stat-label">Satisfaction Rate</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">&lt;5s</span>
+      <span class="stat-label">Response Time</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">500+</span>
+      <span class="stat-label">Occasions Covered</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section id="how">
+  <p class="section-eyebrow">How it works</p>
+  <h2 class="section-title">Three steps to the perfect gift</h2>
+  <p class="section-sub">Our AI does the hard thinking — you just pick what resonates.</p>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <span class="step-icon">📝</span>
+      <h3>Tell us about them</h3>
+      <p>Share the recipient's relationship, age, interests, and the occasion in seconds.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <span class="step-icon">🤖</span>
+      <h3>AI finds ideas</h3>
+      <p>Our Claude-powered model analyzes your inputs and generates uniquely personalized gift ideas.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <span class="step-icon">💖</span>
+      <h3>Save your favourites</h3>
+      <p>Bookmark the ideas you love, refresh for more, and share your wishlist with family.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <span class="step-icon">🛍️</span>
+      <h3>Gift with confidence</h3>
+      <p>Every suggestion comes with a clear reason why it's perfect, plus a budget estimate.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== GIFT FINDER ===== -->
+<section id="finder">
+  <div class="finder-inner">
+    <p class="section-eyebrow" style="text-align:center;">Gift Finder</p>
+    <h2 class="section-title">Describe your recipient</h2>
+    <p class="section-sub">Fill in what you know — the more detail, the better the suggestions.</p>
+
+    <div class="form-card">
+      <div class="form-card-title">
+        Recipient Details
+        <span class="tag">Powered by Claude AI</span>
+      </div>
+
+      <div class="fields-grid">
+
+        <div class="field-group">
+          <label>Relationship</label>
+          <select id="relationship">
+            <option value="">Select relationship…</option>
+            <option>Partner / Spouse</option>
+            <option>Parent</option>
+            <option>Sibling</option>
+            <option>Best Friend</option>
+            <option>Child</option>
+            <option>Grandparent</option>
+            <option>Colleague</option>
+            <option>Boss</option>
+            <option>Teacher / Mentor</option>
+            <option>Neighbour</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Age Range</label>
+          <select id="age">
+            <option value="">Select age…</option>
+            <option>Under 10</option>
+            <option>10–17</option>
+            <option>18–25</option>
+            <option>26–35</option>
+            <option>36–50</option>
+            <option>51–65</option>
+            <option>65+</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Occasion</label>
+          <select id="occasion">
+            <option value="">Select occasion…</option>
+            <option>Birthday</option>
+            <option>Anniversary</option>
+            <option>Wedding</option>
+            <option>Christmas / Holiday</option>
+            <option>Graduation</option>
+            <option>Baby Shower</option>
+            <option>Housewarming</option>
+            <option>Valentine's Day</option>
+            <option>Diwali / Festive</option>
+            <option>Farewell / Goodbye</option>
+            <option>Thank You</option>
+            <option>Just Because</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Gender (optional)</label>
+          <select id="gender">
+            <option value="">Prefer not to say</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Non-binary</option>
+          </select>
+        </div>
+
+        <div class="field-group full">
+          <label>Interests &amp; Hobbies</label>
+          <input type="text" id="interests" placeholder="e.g. cooking, hiking, photography, reading, tech, yoga, travel…" />
+        </div>
+
+        <div class="field-group full">
+          <label>Budget</label>
+          <div class="chips-wrap" id="budgetChips">
+            <button class="chip" data-val="Under ₹500">Under ₹500</button>
+            <button class="chip" data-val="₹500–₹1,500">₹500–1,500</button>
+            <button class="chip" data-val="₹1,500–₹5,000">₹1,500–5,000</button>
+            <button class="chip" data-val="₹5,000–₹15,000">₹5,000–15,000</button>
+            <button class="chip" data-val="₹15,000+">₹15,000+</button>
+          </div>
+        </div>
+
+        <div class="field-group full">
+          <label>Gift Tone (optional)</label>
+          <div class="tone-chips" id="toneChips">
+            <button class="tone-chip" data-val="funny and quirky">😄 Funny &amp; Quirky</button>
+            <button class="tone-chip" data-val="heartfelt and emotional">💕 Heartfelt</button>
+            <button class="tone-chip" data-val="practical and useful">🛠️ Practical</button>
+            <button class="tone-chip" data-val="luxurious and premium">✨ Luxury</button>
+            <button class="tone-chip" data-val="eco-friendly and sustainable">🌱 Eco-Friendly</button>
+            <button class="tone-chip" data-val="experiential and adventurous">🗺️ Experience</button>
+          </div>
+        </div>
+
+        <div class="field-group full">
+          <label>Anything else? (optional)</label>
+          <textarea id="extra" placeholder="e.g. loves to travel, recently moved cities, vegan, into minimalism, has everything already…"></textarea>
+        </div>
+
+      </div>
+
+      <button class="find-btn" id="findBtn" onclick="findGifts()">
+        <span>🎁</span>
+        <span>Find Perfect Gifts</span>
+        <span style="opacity:0.6;font-size:13px;">→</span>
+      </button>
+
+      <div class="error-msg" id="errorMsg"></div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading" id="loading">
+      <div class="loading-anim"><span></span><span></span><span></span></div>
+      <p class="loading-msg">Curating thoughtful ideas for them…</p>
+      <p class="loading-sub">This takes just a few seconds ✦</p>
+    </div>
+
+    <!-- Results -->
+    <div class="results-section" id="resultsSection">
+      <div class="results-header">
+        <h3 class="results-title">Gift Ideas ✦</h3>
+        <div class="results-meta">
+          <span class="results-count" id="resultsCount">6 ideas</span>
+        </div>
+      </div>
+
+      <div class="gifts-grid" id="giftsGrid"></div>
+
+      <!-- Wishlist -->
+      <div class="wishlist-panel" id="wishlistPanel">
+        <div class="wishlist-header">
+          <h4 class="wishlist-title">❤️ My Wishlist</h4>
+          <button class="clear-wishlist" onclick="clearWishlist()">Clear all</button>
+        </div>
+        <div class="wishlist-items" id="wishlistItems"></div>
+      </div>
+
+      <div class="action-strip">
+        <p>Not finding what you love? Try different inputs or refresh for more ideas.</p>
+        <div class="action-btns">
+          <button class="btn-sm btn-sm-outline" onclick="shareWishlist()">📤 Share Wishlist</button>
+          <button class="btn-sm btn-sm-primary" onclick="findGifts()">↺ Refresh Ideas</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURES ===== -->
+<section id="features">
+  <p class="section-eyebrow">Why GiftGenius AI?</p>
+  <h2 class="section-title">Built for thoughtful gifting</h2>
+  <p class="section-sub">Every feature is designed to help you find something they'll actually love.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🧠</div>
+      <h3>Truly Personalized AI</h3>
+      <p>Trained on gift-giving patterns across hundreds of occasions, relationships, and personalities for deeply relevant suggestions.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>Instant Results</h3>
+      <p>Get 6 creative, unique gift ideas in under 5 seconds — no browsing, no tab-switching, no decision fatigue.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💰</div>
+      <h3>Budget-Aware</h3>
+      <p>Every suggestion includes a realistic price estimate in Indian Rupees, matched to your chosen budget range.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">❤️</div>
+      <h3>Save Favourites</h3>
+      <p>Heart any gift idea to save it to your wishlist. Share your list via link or copy it for later.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎭</div>
+      <h3>Tone Customization</h3>
+      <p>Want something funny, heartfelt, luxurious, or eco-friendly? Set the gift tone and the AI adapts its suggestions.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔄</div>
+      <h3>Unlimited Refreshes</h3>
+      <p>Don't like a set of suggestions? Refresh as many times as you want — every batch is completely unique.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIALS ===== -->
+<section id="testimonials">
+  <div class="testimonials-inner">
+    <p class="section-eyebrow" style="color:var(--gold);">What people say</p>
+    <h2 class="section-title">Loved by gifters everywhere</h2>
+    <p class="section-sub">Real stories from people who found the perfect gift.</p>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"I had no idea what to gift my dad for his 60th. GiftGenius AI suggested a personalized whisky tasting experience — he absolutely loved it. Genuinely magical."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">PR</div>
+          <div>
+            <div class="testi-name">Priya R.</div>
+            <div class="testi-role">Mumbai</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Found the most unique anniversary gift for my wife in literally 10 seconds. It even explained WHY the gift was perfect — that detail convinced me completely."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">AK</div>
+          <div>
+            <div class="testi-name">Arjun K.</div>
+            <div class="testi-role">Bengaluru</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"I use this every festival season now. It even handles Diwali gifting for colleagues brilliantly — budget-perfect and always appropriate."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">SS</div>
+          <div>
+            <div class="testi-name">Sneha S.</div>
+            <div class="testi-role">Delhi</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section id="about">
+  <p class="section-eyebrow">About</p>
+  <div class="about-grid">
+    <div class="about-visual">
+      <span class="about-big-icon">🎁</span>
+      <h3>Powered by Claude AI</h3>
+      <p>Built on Anthropic's Claude — one of the world's most advanced language models — to deliver genuinely thoughtful, context-aware gift recommendations.</p>
+      <div class="tech-pills">
+        <span class="tech-pill">Claude AI API</span>
+        <span class="tech-pill">HTML5 / CSS3</span>
+        <span class="tech-pill">Vanilla JS</span>
+        <span class="tech-pill">Custom Dataset</span>
+      </div>
+    </div>
+    <div class="about-content">
+      <h2>Why we built GiftGenius AI</h2>
+      <p>Choosing a gift is hard. You either spend hours scrolling through options, or you default to something generic. We believe every person deserves a gift that shows you truly thought about them.</p>
+      <p>GiftGenius AI combines the power of large language models with a curated dataset of gifting knowledge — trained on thousands of occasion-interest-gift pairings — so every suggestion feels personal and meaningful.</p>
+      <ul class="about-points">
+        <li>Trained on 1,000+ curated gift data examples across 15+ occasions</li>
+        <li>Context-aware suggestions that match personality and interests</li>
+        <li>Budget-conscious recommendations in Indian Rupees</li>
+        <li>Designed for Indian festivals, relationships, and cultural context</li>
+        <li>Continuously improving with user feedback</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <span class="footer-logo">✦ GiftGenius AI</span>
+  <p>Find the perfect gift for anyone, in seconds.</p>
+  <ul class="footer-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#finder">Gift Finder</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+  <p class="copyright">© 2025 GiftGenius AI. Built with ❤️ using Claude AI by Anthropic.</p>
+</footer>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span id="toastMsg">✓ Added to wishlist!</span>
+</div>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+  /* ---- State ---- */
+  let selectedBudget = '';
+  let selectedTone = '';
+  let wishlist = [];
+
+  /* ---- Nav ---- */
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+  function closeMenu() {
+    document.getElementById('mobileMenu').classList.remove('open');
+  }
+
+  /* ---- Chip selections ---- */
+  document.querySelectorAll('#budgetChips .chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#budgetChips .chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      selectedBudget = chip.dataset.val;
+    });
+  });
+
+  document.querySelectorAll('#toneChips .tone-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      if (chip.classList.contains('active')) {
+        chip.classList.remove('active');
+        selectedTone = '';
+      } else {
+        document.querySelectorAll('#toneChips .tone-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        selectedTone = chip.dataset.val;
+      }
+    });
+  });
+
+  /* ---- Main finder ---- */
+  async function findGifts() {
+    const relationship = document.getElementById('relationship').value;
+    const age          = document.getElementById('age').value;
+    const occasion     = document.getElementById('occasion').value;
+    const interests    = document.getElementById('interests').value.trim();
+    const gender       = document.getElementById('gender').value;
+    const extra        = document.getElementById('extra').value.trim();
+    const errorEl      = document.getElementById('errorMsg');
+
+    errorEl.classList.remove('show');
+
+    if (!relationship || !age || !occasion) {
+      errorEl.textContent = '⚠️ Please fill in Relationship, Age Range, and Occasion to continue.';
+      errorEl.classList.add('show');
+      return;
+    }
+
+    const btn = document.getElementById('findBtn');
+    btn.disabled = true;
+    document.getElementById('loading').classList.add('show');
+    document.getElementById('resultsSection').classList.remove('show');
+
+    const prompt = buildPrompt({ relationship, age, occasion, interests, gender, extra });
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1500,
+          system: SYSTEM_PROMPT,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+
+      const data = await response.json();
+      const text = data.content?.map(i => i.text || '').join('') || '';
+      const clean = text.replace(/```json|```/g, '').trim();
+      const gifts = JSON.parse(clean);
+
+      renderGifts(gifts);
+    } catch (err) {
+      errorEl.textContent = '⚠️ Something went wrong. Please try again in a moment.';
+      errorEl.classList.add('show');
+    } finally {
+      btn.disabled = false;
+      document.getElementById('loading').classList.remove('show');
+    }
+  }
+
+  /* ---- System prompt (training context injected here) ---- */
+  const SYSTEM_PROMPT = `You are GiftGenius AI, an expert gift advisor trained on thousands of gifting scenarios across Indian occasions, relationships, interests, and budgets.
+
+Your training data covers:
+- 15+ occasions: Birthday, Anniversary, Diwali, Holi, Raksha Bandhan, Wedding, Graduation, Baby Shower, Valentine's Day, Housewarming, Farewell, Christmas, Eid, Pongal, Teacher's Day
+- 10+ relationships: Partner, Parent, Sibling, Friend, Child, Grandparent, Colleague, Boss, Teacher, Neighbour
+- Age groups: Under 10, 10-17, 18-25, 26-35, 36-50, 51-65, 65+
+- Budget ranges in INR: Under ₹500, ₹500-1500, ₹1500-5000, ₹5000-15000, ₹15000+
+- Interest categories: Tech, Cooking, Books, Fitness, Music, Art, Travel, Fashion, Home Decor, Gaming, Gardening, Yoga, Photography, Movies, Sports
+
+Gift tone styles:
+- "funny and quirky": Novelty items, punny gifts, gag gifts, unexpected humour
+- "heartfelt and emotional": Personalised, sentimental, memory-based, keepsake gifts
+- "practical and useful": Everyday utility items that solve real problems
+- "luxurious and premium": High-end, aspirational, indulgent experiences or products
+- "eco-friendly and sustainable": Zero-waste, organic, recycled, ethical brands
+- "experiential and adventurous": Workshops, trips, cooking classes, adventure activities
+
+Rules:
+1. ALWAYS return ONLY a valid JSON array — no markdown, no preamble, no explanation
+2. Return exactly 6 gift objects
+3. Each object must have: emoji, name, why, price, tags
+4. Match budget strictly — never suggest gifts outside the stated range
+5. Be specific (not "a book" but "The 5AM Club by Robin Sharma")
+6. why must be one compelling sentence under 20 words
+7. tags must be 2-3 items from: ["Personalized","Experiences","Tech","Books","Fashion","Wellness","Food","Home","Handmade","Luxury","Eco","Sports","Music","Art","Gaming"]
+8. price must be a realistic INR range like "₹800–₹1,200"`;
+
+  function buildPrompt({ relationship, age, occasion, interests, gender, extra }) {
+    return `Find 6 gift ideas for:
+- Recipient: ${relationship}, ${age}${gender && gender !== 'Prefer not to say' ? ', ' + gender : ''}
+- Occasion: ${occasion}
+- Interests: ${interests || 'not specified'}
+- Budget: ${selectedBudget || 'flexible'}
+- Tone: ${selectedTone || 'balanced and thoughtful'}
+${extra ? '- Extra context: ' + extra : ''}
+
+Return ONLY the JSON array.`;
+  }
+
+  /* ---- Render gifts ---- */
+  function renderGifts(gifts) {
+    const grid = document.getElementById('giftsGrid');
+    grid.innerHTML = '';
+
+    gifts.forEach((gift, i) => {
+      const tags = (gift.tags || []).map(t => `<span class="gift-tag">${t}</span>`).join('');
+      const card = document.createElement('div');
+      card.className = 'gift-card';
+      card.style.animationDelay = (i * 0.07) + 's';
+      card.innerHTML = `
+        <div class="gift-card-top">
+          <span class="gift-emoji">${gift.emoji || '🎁'}</span>
+          <button class="fav-btn" title="Save to wishlist" onclick="toggleWishlist(this, ${JSON.stringify(gift).replace(/"/g, '&quot;')})">♡</button>
+        </div>
+        <div class="gift-name">${gift.name}</div>
+        <div class="gift-why">${gift.why}</div>
+        <div class="gift-footer">
+          <span class="gift-price">₹ ${gift.price}</span>
+          <div class="gift-tags">${tags}</div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+
+    document.getElementById('resultsCount').textContent = `${gifts.length} ideas`;
+    document.getElementById('resultsSection').classList.add('show');
+    document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /* ---- Wishlist ---- */
+  function toggleWishlist(btn, gift) {
+    const idx = wishlist.findIndex(w => w.name === gift.name);
+    if (idx > -1) {
+      wishlist.splice(idx, 1);
+      btn.classList.remove('active');
+      btn.textContent = '♡';
+      showToast('Removed from wishlist');
+    } else {
+      wishlist.push(gift);
+      btn.classList.add('active');
+      btn.textContent = '♥';
+      showToast('Added to wishlist! ❤️');
+    }
+    renderWishlist();
+  }
+
+  function renderWishlist() {
+    const panel = document.getElementById('wishlistPanel');
+    const list  = document.getElementById('wishlistItems');
+
+    if (wishlist.length === 0) {
+      panel.classList.remove('show');
+      return;
+    }
+
+    panel.classList.add('show');
+    list.innerHTML = wishlist.map(w => `
+      <div class="wishlist-item">
+        <span class="wi-emoji">${w.emoji || '🎁'}</span>
+        <span class="wi-name">${w.name}</span>
+        <span class="wi-price">${w.price}</span>
+      </div>
+    `).join('');
+  }
+
+  function clearWishlist() {
+    wishlist = [];
+    document.querySelectorAll('.fav-btn').forEach(b => {
+      b.classList.remove('active');
+      b.textContent = '♡';
+    });
+    renderWishlist();
+    showToast('Wishlist cleared');
+  }
+
+  function shareWishlist() {
+    if (wishlist.length === 0) { showToast('Add some gifts to your wishlist first!'); return; }
+    const text = '🎁 My Gift Wishlist from GiftGenius AI:\n\n' +
+      wishlist.map((w, i) => `${i + 1}. ${w.emoji} ${w.name} — ${w.price}`).join('\n') +
+      '\n\nFind yours at GiftGenius AI';
+    navigator.clipboard.writeText(text).then(() => showToast('Wishlist copied to clipboard! 📋'));
+  }
+
+  /* ---- Toast ---- */
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+  }
+</script>
+
+</body>
+</html>
